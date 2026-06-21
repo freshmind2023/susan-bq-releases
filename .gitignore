@@ -43,3 +43,7 @@ ENV/bin/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Github CLI binary
+gh
+
