@@ -39,6 +39,28 @@
     --color-general-glow: rgba(2, 132, 199, 0.15);
     --color-general-dim: rgba(2, 132, 199, 0.06);
 
+    /* Components & Theme variables */
+    --bg-input: rgba(6, 9, 19, 0.6);
+    --bg-input-focus: rgba(6, 9, 19, 0.8);
+    --border-input: rgba(255, 255, 255, 0.08);
+    
+    --bg-modal: rgba(13, 20, 38, 0.85);
+    --bg-modal-overlay: rgba(2, 4, 10, 0.7);
+    --bg-code: rgba(0, 0, 0, 0.3);
+    
+    --bg-btn-secondary: rgba(255, 255, 255, 0.05);
+    --bg-btn-secondary-hover: rgba(255, 255, 255, 0.1);
+    --border-btn-secondary: rgba(255, 255, 255, 0.08);
+    --border-btn-secondary-hover: rgba(255, 255, 255, 0.15);
+
+    --bg-action-btn: rgba(255, 255, 255, 0.04);
+    --bg-action-btn-hover: rgba(255, 255, 255, 0.1);
+    --border-action-btn: rgba(255, 255, 255, 0.05);
+    --border-action-btn-hover: rgba(255, 255, 255, 0.15);
+
+    --bg-tweet-preview: rgba(0, 0, 0, 0.2);
+    --opacity-glow: 0.35;
+
     /* Fonts */
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-title: 'Plus Jakarta Sans', var(--font-sans);
@@ -50,6 +72,58 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     --blur-strength: 16px;
+}
+
+/* Light Theme Variables Override */
+[data-theme="light"] {
+    --bg-main: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-card: rgba(15, 23, 42, 0.08);
+    --border-card-hover: rgba(66, 133, 244, 0.45);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    
+    --google-blue-glow: rgba(66, 133, 244, 0.15);
+    --google-blue-dim: rgba(66, 133, 244, 0.07);
+    
+    --bg-input: #ffffff;
+    --bg-input-focus: #ffffff;
+    --border-input: rgba(15, 23, 42, 0.12);
+    
+    --bg-modal: rgba(255, 255, 255, 0.95);
+    --bg-modal-overlay: rgba(15, 23, 42, 0.4);
+    --bg-code: rgba(15, 23, 42, 0.06);
+    
+    --bg-btn-secondary: rgba(15, 23, 42, 0.05);
+    --bg-btn-secondary-hover: rgba(15, 23, 42, 0.08);
+    --border-btn-secondary: rgba(15, 23, 42, 0.08);
+    --border-btn-secondary-hover: rgba(15, 23, 42, 0.12);
+
+    --bg-action-btn: rgba(15, 23, 42, 0.04);
+    --bg-action-btn-hover: rgba(15, 23, 42, 0.08);
+    --border-action-btn: rgba(15, 23, 42, 0.06);
+    --border-action-btn-hover: rgba(15, 23, 42, 0.12);
+
+    --bg-tweet-preview: rgba(15, 23, 42, 0.04);
+    --opacity-glow: 0.14;
+
+    --color-feature-glow: rgba(16, 185, 129, 0.1);
+    --color-feature-dim: rgba(16, 185, 129, 0.08);
+
+    --color-change-glow: rgba(139, 92, 246, 0.1);
+    --color-change-dim: rgba(139, 92, 246, 0.08);
+
+    --color-announcement-glow: rgba(251, 191, 36, 0.1);
+    --color-announcement-dim: rgba(251, 191, 36, 0.08);
+
+    --color-deprecation-glow: rgba(239, 68, 68, 0.1);
+    --color-deprecation-dim: rgba(239, 68, 68, 0.08);
+
+    --color-general-glow: rgba(2, 132, 199, 0.1);
+    --color-general-dim: rgba(2, 132, 199, 0.08);
 }
 
 /* ==========================================================================
@@ -99,7 +173,7 @@ body {
     filter: blur(120px);
     z-index: -1;
     pointer-events: none;
-    opacity: 0.35;
+    opacity: var(--opacity-glow);
 }
 .glow-1 {
     width: 600px;
@@ -111,7 +185,7 @@ body {
 .glow-2 {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--color-change-glow) 0%, transparent 70%);
     bottom: -150px;
     left: -100px;
 }
@@ -206,6 +280,12 @@ body {
     gap: 10px;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .last-updated-wrapper {
     display: flex;
     align-items: center;
@@ -243,6 +323,15 @@ body {
     border: 1px solid transparent;
 }
 
+.btn-icon-only {
+    padding: 10px !important;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .btn-primary {
     background-color: var(--google-blue);
     color: #ffffff;
@@ -258,13 +347,13 @@ body {
 }
 
 .btn-secondary {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--bg-btn-secondary);
     color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-btn-secondary);
 }
 .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--bg-btn-secondary-hover);
+    border-color: var(--border-btn-secondary-hover);
     transform: translateY(-1.5px);
 }
 .btn-secondary:active {
@@ -328,8 +417,8 @@ body {
 
 #search-input {
     width: 100%;
-    background-color: rgba(6, 9, 19, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-input);
     border-radius: var(--radius-sm);
     padding: 12px 16px 12px 46px;
     color: var(--text-primary);
@@ -340,8 +429,8 @@ body {
 #search-input:focus {
     outline: none;
     border-color: var(--google-blue);
-    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15);
-    background-color: rgba(6, 9, 19, 0.8);
+    box-shadow: 0 0 0 3px var(--google-blue-dim);
+    background-color: var(--bg-input-focus);
 }
 
 .clear-btn {
@@ -581,8 +670,8 @@ body {
 }
 
 .action-icon-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-action-btn);
+    border: 1px solid var(--border-action-btn);
     color: var(--text-secondary);
     width: 32px;
     height: 32px;
@@ -594,14 +683,14 @@ body {
     transition: var(--transition-smooth);
 }
 .action-icon-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--bg-action-btn-hover);
     color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--border-action-btn-hover);
     transform: scale(1.05);
 }
 .action-icon-btn.tweet-btn:hover {
-    background-color: rgba(255, 255, 255, 0.95);
-    color: #0b0f19;
+    background-color: var(--text-primary);
+    color: var(--bg-main);
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
@@ -626,11 +715,11 @@ body {
 .note-content code {
     font-family: monospace;
     font-size: 13px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--bg-code);
     padding: 2px 6px;
     border-radius: 4px;
-    color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--border-card);
 }
 
 .note-content p {
@@ -694,7 +783,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(2, 4, 10, 0.7);
+    background-color: var(--bg-modal-overlay);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 1000;
@@ -713,7 +802,7 @@ body {
     flex-direction: column;
     gap: 20px;
     animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    background: rgba(13, 20, 38, 0.85); /* Darker background for modal readability */
+    background: var(--bg-modal);
 }
 
 .modal-header {
@@ -751,8 +840,8 @@ body {
 
 /* Tweet preview mockup resembling a modern platform post */
 .tweet-preview-container {
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: var(--bg-tweet-preview);
+    border: 1px solid var(--border-card);
     border-radius: var(--radius-sm);
     padding: 16px;
     display: flex;

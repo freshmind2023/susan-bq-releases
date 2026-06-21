@@ -7,6 +7,7 @@ let searchQuery = '';
 
 // DOM Elements
 const refreshBtn = document.getElementById('refresh-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const lastUpdatedSpan = document.getElementById('last-updated');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
@@ -15,6 +16,7 @@ const notesContainer = document.getElementById('notes-container');
 const resultsCountDiv = document.getElementById('results-count');
 const feedMetaDiv = document.getElementById('feed-meta');
 const resetFiltersBtn = document.getElementById('reset-filters-btn');
+const themeToggleBtn = document.getElementById('theme-toggle');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -46,6 +48,7 @@ let activeTweetData = {
 // Initialization & Listeners
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     initApp();
 });
 
@@ -55,6 +58,9 @@ function initApp() {
 
     // Event listeners
     refreshBtn.addEventListener('click', () => fetchReleaseNotes(true));
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', exportToCSV);
+    }
     
     searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value.toLowerCase().trim();
@@ -249,10 +255,10 @@ function renderFeed() {
                 const cardActions = document.createElement('div');
                 cardActions.className = 'card-actions';
 
-                // Copy Link Button
+                // Copy to Clipboard Button
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'action-icon-btn copy-btn';
-                copyBtn.title = 'Copy raw text';
+                copyBtn.title = 'Copy to Clipboard';
                 copyBtn.innerHTML = `
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -487,4 +493,130 @@ function showToast(message, type = 'success') {
         clearTimeout(autoRemove);
         toast.remove();
     });
+}
+
+// ==========================================================================
+// CSV Export logic
+// ==========================================================================
+function exportToCSV() {
+    if (releaseNotes.length === 0) {
+        showToast('No release notes available to export', 'error');
+        return;
+    }
+
+    // Gather matched items
+    const rows = [['Date', 'Category', 'Link', 'Content']];
+    let matchedCount = 0;
+
+    releaseNotes.forEach(entry => {
+        entry.sections.forEach(sec => {
+            // Category check
+            const categoryMatch = (activeCategory === 'all' || sec.type.toLowerCase() === activeCategory.toLowerCase());
+            
+            // Search match
+            const searchMatch = !searchQuery || 
+                sec.type.toLowerCase().includes(searchQuery) || 
+                sec.text.toLowerCase().includes(searchQuery) ||
+                entry.date.toLowerCase().includes(searchQuery);
+
+            if (categoryMatch && searchMatch) {
+                // Escape CSV values
+                const escapeCsv = (val) => {
+                    if (val === null || val === undefined) return '';
+                    let str = String(val);
+                    // Replace double quotes with two double quotes
+                    str = str.replace(/"/g, '""');
+                    return `"${str}"`;
+                };
+
+                rows.push([
+                    escapeCsv(entry.date),
+                    escapeCsv(sec.type),
+                    escapeCsv(entry.link),
+                    escapeCsv(sec.text)
+                ]);
+                matchedCount++;
+            }
+        });
+    });
+
+    if (matchedCount === 0) {
+        showToast('No matching release notes to export', 'error');
+        return;
+    }
+
+    const csvContent = rows.map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    // Create clean filename based on filters
+    let filename = 'bq_releases';
+    if (activeCategory !== 'all') {
+        filename += `_${activeCategory.toLowerCase()}`;
+    }
+    if (searchQuery) {
+        filename += `_search_${searchQuery.replace(/[^a-z0-9]/gi, '_')}`;
+    }
+    filename += '.csv';
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast(`Exported ${matchedCount} updates to CSV!`, 'success');
+}
+
+// ==========================================================================
+// Theme Toggling (Light / Dark Mode)
+// ==========================================================================
+function initTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    updateThemeIcon(currentTheme);
+    
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    showToast(`Swapped to ${newTheme} mode!`, 'success');
+}
+
+function updateThemeIcon(theme) {
+    if (!themeToggleBtn) return;
+    if (theme === 'light') {
+        // Show Moon Icon for switching to dark mode
+        themeToggleBtn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        `;
+        themeToggleBtn.title = 'Switch to Dark Mode';
+    } else {
+        // Show Sun Icon for switching to light mode
+        themeToggleBtn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+        `;
+        themeToggleBtn.title = 'Switch to Light Mode';
+    }
 }
